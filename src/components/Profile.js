@@ -2,15 +2,18 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import CustomNavbar from "./Navbar";
-import { Modal, Button, Form, InputGroup,Container, Col} from "react-bootstrap";
-import { FaPlus, FaEdit, FaTrash, FaFileAlt } from "react-icons/fa";
+import { Modal, Button, Form, InputGroup,Container} from "react-bootstrap";
+import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 import "./pay.css";
 import richesseImage from '../images/richesse.jpg';
-import {useMutation} from "@tanstack/react-query"
-import { updateProfileSetting } from "../api/fetching-apis";
+import useProfile from "../hooks/callProfile";
+import FullNameModal from "./changeProfile";
+import ChangePasswordModal from "./ChangePasswordModal";
 
 // ProfileCard Component
 const ProfileCard = () => {
+  
+  const { data: profile } = useProfile();
 
   return (
     <div className="card profile-card text-center">
@@ -18,7 +21,7 @@ const ProfileCard = () => {
         <div className="pro-img">
           <img src={richesseImage} alt="Profile" />
         </div>
-        <h3 className="pb-2 profile-name">Sai Charan SampathiRao</h3>
+        <h3 className="pb-2 profile-name">{profile?.FullName || "Guest"}</h3>
         <hr />
         <div className="row">
         {/* <Col className="side-border"> */}
@@ -175,109 +178,185 @@ const ProfileTab = () => {
       setData((prev) => ({ ...prev, [activeSection]: newData }));
       handleClose();
     };
-  
+
+    const { data: profile, isLoading, isError } = useProfile();    
+
+    if (isLoading) return <p>Loading profile...</p>;
+    if (isError) return <p>Error loading profile</p>;
+
+    // Handle missing values
+    const userData = {
+        fullName: profile?.FullName || "N/A",
+        email: profile?.Email || "N/A",
+        phoneNumber: profile?.Phone || "N/A",
+        userID: profile?.UserID || "N/A",
+        kycStatus: profile?.KYC_Status || "N/A",
+        isEmailVerified: profile?.isEmailVerified ? "Yes" : "No",
+    };
+
+    // console.log(userData);
     return (
       <div className="container mt-4">
+        <h5 className="text-uppercase">Personal Information</h5>
+        <div className="personal-info">
+          <p>
+            <strong>Full Name:</strong> {userData.fullName}
+          </p>
+          <p>
+            <strong>Email:</strong> {userData.email}
+          </p>
+          <p>
+            <strong>Phone Number:</strong> {userData.phoneNumber}
+          </p>
+          <p>
+            <strong>UserID:</strong> {userData.userID}
+          </p>
+          <p>
+            <strong>KYC_Status:</strong> {userData.kycStatus}
+          </p>
+          <p>
+            <strong>isEmailVerified:</strong> {userData.isEmailVerified}
+          </p>
+        </div>{" "}
+        <br />
         <h5 className="text-uppercase">Crypto Wallet Type</h5>
         {data.crypto ? (
           <div className="d-flex justify-content-between align-items-center border p-3 rounded">
             <strong>{data.crypto.walletName}</strong>
             <div>
-              <FaEdit className="text-warning me-2" onClick={() => handleShow("crypto")} />
-              <FaTrash className="text-danger" onClick={() => setData({ ...data, crypto: null })} />
+              <FaEdit
+                className="text-warning me-2"
+                onClick={() => handleShow("crypto")}
+              />
+              <FaTrash
+                className="text-danger"
+                onClick={() => setData({ ...data, crypto: null })}
+              />
             </div>
           </div>
         ) : (
-            <p className="text-muted d-flex justify-content-between align-items-center">
-            No details to show 
-            <FaPlus className="text-primary ms-2" onClick={() => handleShow("crypto")} />
+          <p className="text-muted d-flex justify-content-between align-items-center">
+            No details to show
+            <FaPlus
+              className="text-primary ms-2"
+              onClick={() => handleShow("crypto")}
+            />
           </p>
         )}
-  
         <h5 className="text-uppercase mt-4">Bank Account Details</h5>
         {data.bank ? (
           <div className="d-flex justify-content-between align-items-center border p-3 rounded">
             <strong>{data.bank.accountName}</strong>
             <div>
-              <FaEdit className="text-warning me-2" onClick={() => handleShow("bank")} />
-              <FaTrash className="text-danger" onClick={() => setData({ ...data, bank: null })} />
+              <FaEdit
+                className="text-warning me-2"
+                onClick={() => handleShow("bank")}
+              />
+              <FaTrash
+                className="text-danger"
+                onClick={() => setData({ ...data, bank: null })}
+              />
             </div>
           </div>
         ) : (
-            <p className="text-muted d-flex justify-content-between align-items-center">No details to show <FaPlus className="text-primary ms-2" onClick={() => handleShow("bank")} /></p>
+          <p className="text-muted d-flex justify-content-between align-items-center">
+            No details to show{" "}
+            <FaPlus
+              className="text-primary ms-2"
+              onClick={() => handleShow("bank")}
+            />
+          </p>
         )}
-  
         <h5 className="text-uppercase mt-4">UPI Details</h5>
         {data.upi ? (
           <div className="d-flex justify-content-between align-items-center border p-3 rounded">
             <strong>{data.upi.upiAddress}</strong>
             <div>
-              <FaEdit className="text-warning me-2" onClick={() => handleShow("upi")} />
-              <FaTrash className="text-danger" onClick={() => setData({ ...data, upi: null })} />
+              <FaEdit
+                className="text-warning me-2"
+                onClick={() => handleShow("upi")}
+              />
+              <FaTrash
+                className="text-danger"
+                onClick={() => setData({ ...data, upi: null })}
+              />
             </div>
           </div>
         ) : (
-            <p className="text-muted d-flex justify-content-between align-items-center">No details to show <FaPlus className="text-primary ms-2" onClick={() => handleShow("upi")} /></p>
+          <p className="text-muted d-flex justify-content-between align-items-center">
+            No details to show{" "}
+            <FaPlus
+              className="text-primary ms-2"
+              onClick={() => handleShow("upi")}
+            />
+          </p>
         )}
-  
         <Modal show={showModal} onHide={handleClose} centered>
           <Modal.Header closeButton>
-            <Modal.Title>Add {activeSection === "crypto" ? "Tether Wallet" : activeSection === "bank" ? "Bank Account" : "UPI Details"}</Modal.Title>
+            <Modal.Title>
+              Add{" "}
+              {activeSection === "crypto"
+                ? "Tether Wallet"
+                : activeSection === "bank"
+                ? "Bank Account"
+                : "UPI Details"}
+            </Modal.Title>
           </Modal.Header>
           <Form onSubmit={handleSave}>
             <Modal.Body>
-            {activeSection === "crypto" && (
-  <>
-    <Form.Group className="mb-3">
-      <Form.Label className="fw-bold">SELECT WALLET TYPE</Form.Label>
-      <div className="d-flex gap-2">
-        <Form.Check 
-          type="radio" 
-          label="BEP20" 
-          name="walletType" 
-          value="BEP20" 
-          required 
-          inline
-        />
-        <Form.Check 
-          type="radio" 
-          label="ERC20" 
-          name="walletType" 
-          value="ERC20" 
-          required 
-          inline
-        />
-        <Form.Check 
-          type="radio" 
-          label="TRC20" 
-          name="walletType" 
-          value="TRC20" 
-          required 
-          inline
-        />
-      </div>
-    </Form.Group>
+              {activeSection === "crypto" && (
+                <>
+                  <Form.Group className="mb-3">
+                    <Form.Label className="fw-bold">
+                      SELECT WALLET TYPE
+                    </Form.Label>
+                    <div className="d-flex gap-2">
+                      <Form.Check
+                        type="radio"
+                        label="BEP20"
+                        name="walletType"
+                        value="BEP20"
+                        required
+                        inline
+                      />
+                      <Form.Check
+                        type="radio"
+                        label="ERC20"
+                        name="walletType"
+                        value="ERC20"
+                        required
+                        inline
+                      />
+                      <Form.Check
+                        type="radio"
+                        label="TRC20"
+                        name="walletType"
+                        value="TRC20"
+                        required
+                        inline
+                      />
+                    </div>
+                  </Form.Group>
 
-    <Form.Group className="mb-3">
-      <Form.Label>Crypto Wallet Name</Form.Label>
-      <Form.Control name="walletName" required />
-    </Form.Group>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Crypto Wallet Name</Form.Label>
+                    <Form.Control name="walletName" required />
+                  </Form.Group>
 
-    <Form.Group className="mb-3">
-      <Form.Label>Crypto Wallet Address</Form.Label>
-      <Form.Control name="walletAddress" required />
-    </Form.Group>
-  </>
-)}
+                  <Form.Group className="mb-3">
+                    <Form.Label>Crypto Wallet Address</Form.Label>
+                    <Form.Control name="walletAddress" required />
+                  </Form.Group>
+                </>
+              )}
               {activeSection === "bank" && (
                 <>
                   <Form.Group className="mb-3">
-                    
-                  <Form.Group className="mb-3">
-                    <Form.Label>Bank Name</Form.Label>
-                    <Form.Control name="bankName" required />
-                  </Form.Group>
-                  <Form.Label>Bank Account Name</Form.Label>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Bank Name</Form.Label>
+                      <Form.Control name="bankName" required />
+                    </Form.Group>
+                    <Form.Label>Bank Account Name</Form.Label>
                     <Form.Control name="accountName" required />
                   </Form.Group>
                   <Form.Group className="mb-3">
@@ -289,16 +368,27 @@ const ProfileTab = () => {
                     <Form.Control name="bankName" required />
                   </Form.Group>
                   <div className="file-upload-section">
-  <label>Bank Account Proof (Upload statement or cheque)</label>
-  <p className="file-note">
-    <span className="text-danger">NOTE: Only (JPEG/PNG/PDF) file types are allowed and MAX size: 10MB</span>
-  </p>
-  
-  <div className="custom-file">
-    <input type="file" id="file1" className="custom-file-input" />
-    <label htmlFor="file1" className="custom-file-label">Browse File</label>
-  </div>
-</div>
+                    <label>
+                      Bank Account Proof (Upload statement or cheque)
+                    </label>
+                    <p className="file-note">
+                      <span className="text-danger">
+                        NOTE: Only (JPEG/PNG/PDF) file types are allowed and MAX
+                        size: 10MB
+                      </span>
+                    </p>
+
+                    <div className="custom-file">
+                      <input
+                        type="file"
+                        id="file1"
+                        className="custom-file-input"
+                      />
+                      <label htmlFor="file1" className="custom-file-label">
+                        Browse File
+                      </label>
+                    </div>
+                  </div>
                 </>
               )}
               {activeSection === "upi" && (
@@ -312,7 +402,9 @@ const ProfileTab = () => {
             </Modal.Body>
             <Modal.Footer>
               {/* <Button variant="secondary" onClick={handleClose}>Close</Button> */}
-              <Button className="search-btn" type="submit" variant="warning">Save</Button>
+              <Button className="search-btn" type="submit" variant="warning">
+                Save
+              </Button>
             </Modal.Footer>
           </Form>
         </Modal>
@@ -320,75 +412,46 @@ const ProfileTab = () => {
     );
   };
 
-
-
+// SettingsTab Component
 const SettingsTab = () => {
-  const {mutateAsync}=useMutation({
-    mutationFn:updateProfileSetting,
-    mutationKey:["updateProfileSetting"]
-  })
-  const [formData,setformData]=useState({
-    // FirstName:"",
-    // LastName:"",
-    FullName:"",
-    Phone:"",
-    Email:""
-  })
-  const handleChange=(e)=>{
-    e.preventDefault()
-    setformData({...formData,[e.target.name]:e.target.value})
-  }
-  const handleSubmit=()=>{
-    console.log(formData)
-   mutateAsync(formData).then((res)=>{
-          console.log(res)
-   }).catch((err)=>{
-      console.log(err)
-   })
+  const [showFullNameModal, setShowFullNameModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [data, setData] = useState({ fullName: "" });
 
-  }
-    return (
-      <div className="settings-container" >
-        <div className="card-body" >
-          <form className="form-horizontal form-material" >
-            <div className="form-group">
-              <label className="col-md-12" style={{marginBottom:'8px'}}>Full Name</label>
-              <input type="text" className="form-control" name="FullName" value={formData.FullName} onChange={handleChange} style={{width: '60%', marginBottom:'10px'}} />
-            </div>
-            
-            {/* <div className="form-group">
-              <label className="col-md-12" style={{marginBottom:'8px'}}>Last Name</label>
-              <input type="text" className="form-control"  name="LastName" value={formData.LastName} onChange={handleChange} style={{width:'60%', marginBottom:'10px'}} />
-            </div>
-             */}
-            <div className="form-group">
-              <label className="col-md-12" style={{marginBottom:'8px'}}>Email</label>
-              <input type="email" className="form-control font-weight-bold" name="Email" value={formData.Email} onChange={handleChange} style={{width: '60%', marginBottom:'10px'}} />
-            </div>
-            
-            <div className="form-group">
-              <label className="col-md-12" style={{marginBottom:'8px'}}>Phone No</label>
-              <div className="input-group">
-                <select className="form-control col-3">
-                  <option value="+91" selected>+91</option>
-                </select>
-                <input type="text" className="form-control col-9" name="Phone" value={formData.Phone} onChange={handleChange} style={{width: '80%'}}  />
-              </div>
-            </div>
-            
-            <div className="form-group pt-4">
-            <Button className="search-btn" onClick={handleSubmit}>
-            Save Details
-          </Button>
-            </div>
-          </form>
-        </div>
-      </div>
-    );
+  const handleSaveFullName = (newData) => {
+    setData((prev) => ({ ...prev, fullName: newData.fullName }));
+    setShowFullNameModal(false);
   };
-  
-  
 
+  return (
+    <div className="container mt-4">
+      <h5 className="text-uppercase">Change Profile</h5>
+      <p className="text-muted d-flex justify-content-between align-items-center">
+        You can only change your Full Name
+        <FaPlus className="text-primary ms-2" onClick={() => setShowFullNameModal(true)} />
+      </p>
+
+      <h5 className="text-uppercase mt-4">Change Password</h5>
+      <p className="text-muted d-flex justify-content-between align-items-center">
+        You have to know your Old Password
+        <FaPlus className="text-primary ms-2" onClick={() => setShowPasswordModal(true)} />
+      </p>
+
+      {/* Modals */}
+      <FullNameModal
+        show={showFullNameModal}
+        handleClose={() => setShowFullNameModal(false)}
+        handleSave={handleSaveFullName}
+      />
+      <ChangePasswordModal
+        show={showPasswordModal}
+        handleClose={() => setShowPasswordModal(false)}
+      />
+    </div>
+  );
+};
+
+// EDDTab Component
   const EDDTab = () => {
     const [showModal, setShowModal] = useState(false);
   
@@ -554,7 +617,7 @@ const Profile = () => {
               style={{ background: "#333", color: "#fff" }}
             >
               <Container>
-                <p className="mb-0">© 2025 Richesse Solutions, All Rights Reserved</p>
+                <p className="mb-0">© 2025 Richesse Currency Exchange, All Rights Reserved</p>
                 <p className="mb-0">
                   <a href="#terms" style={{ color: "#fff", textDecoration: "none" }}>
                     Terms of Use

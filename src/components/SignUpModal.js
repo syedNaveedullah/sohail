@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import { FcGoogle } from "react-icons/fc"; 
 import "./pay.css"; 
+import Swal from "sweetalert2"; // Import SweetAlert2
+
 
 import { useMutation } from "@tanstack/react-query";
 import { signupUser } from "../api/fetching-apis";
@@ -28,7 +30,13 @@ const SignUpModal = ({ show, handleClose }) => {
     },
     onError: (error) => {
       console.error("Signup failed:", error);
-      // alert("Signup failed. Try again.");
+
+      Swal.fire({
+        title: "failed!",
+        text: error.response.data.message,
+        icon: "warning",
+        confirmButtonText: "OK",
+      });
     },
   });
 
@@ -48,7 +56,7 @@ const SignUpModal = ({ show, handleClose }) => {
           <h3>Sign Up</h3>
         </Modal.Title>
 
-        <Button
+        {/* <Button
           variant="outline-danger"
           className="w-100 mb-4 d-flex align-items-center justify-content-center"
           style={{
@@ -73,7 +81,7 @@ const SignUpModal = ({ show, handleClose }) => {
             OR
           </span>
         </div>
-        {mutation.isError && <p style={{ color: "red" }}>Signup failed. Try again.</p>}
+        {mutation.isError && <p style={{ color: "red" }}>Signup failed. Try again.</p>} */}
         <Form onSubmit={handleSubmit}>
           <Row>
             <Col>
@@ -141,7 +149,7 @@ const SignUpModal = ({ show, handleClose }) => {
               label={
                 <span>
                   By signing up, you agree with{" "}
-                  <a href="#terms" className="text-primary">
+                  <a href="#terms" className="text-primary" >
                     terms and conditions
                   </a>{" "}
                   of the service
@@ -158,7 +166,7 @@ const SignUpModal = ({ show, handleClose }) => {
             className="w-100 mb-3"
             style={{
               borderRadius: "20px",
-              background: "linear-gradient(to right, #f2711d, #f3ac1b)",
+              background: " #d4af37",
               border: "none",
 
             }}>
@@ -168,7 +176,7 @@ const SignUpModal = ({ show, handleClose }) => {
 
           <div className="text-center">
             <span>Already have an account? </span>
-            <Button variant="link" className="p-0">
+            <Button variant="link" className="p-0"  style={{color:'#d4af37'}} onClick={() => navigate("/login")}>
               LOGIN
             </Button>
           </div>

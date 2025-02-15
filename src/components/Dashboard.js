@@ -13,8 +13,12 @@ const Dashboard = () => {
     const [selectedAction, setSelectedAction] = useState("buy");
     const [inrAmount, setInrAmount] = useState(9406);
 
+    const [enterAmount, setEnterAmount] = useState();
+    
     const exchangeRate = selectedAction === "buy" ? 94.06 : 89.38;
-  const usdtAmount = (inrAmount / exchangeRate).toFixed(2);
+      const usdtCurrency=enterAmount/exchangeRate;
+      const indiacurrency = exchangeRate * enterAmount;
+  
   return (
     <>
    
@@ -37,7 +41,7 @@ const Dashboard = () => {
                 <Card.Title className="text-danger fw-bold">
                   IMPORTANT NOTIFICATION – CHANGE IN BANK & UPI DETAILS
                 </Card.Title>
-                <Card.Text>
+                <Card.Text style={{color:'white'}}>
                   We have updated new bank account and UPI ID details for your buy
                   transactions. Please ensure all future fund transfers are made
                   to these updated account details. You can find the new details
@@ -56,14 +60,14 @@ const Dashboard = () => {
                 <Card.Title className="text-danger fw-bold">
                   Your KYC approval is pending
                 </Card.Title>
-                <Card.Text>You will be notified once the approval is completed</Card.Text>
+                <Card.Text style={{color:'white'}}>You will be notified once the approval is completed</Card.Text>
               </Card.Body>
             </Card>
 
             {/* No Transactions */}
             <Card className="mb-3 border-0 transaction-card1">
               <Card.Body className="d-flex justify-content-between align-items-center">
-                <span>There are no transactions at the moment. Make your first exchange!</span>
+                <span style={{color:'white'}}>There are no transactions at the moment. Make your first exchange!</span>
                 <Button variant="danger">Exchange</Button>
               </Card.Body>
             </Card>
@@ -121,7 +125,7 @@ const Dashboard = () => {
                 <p className="rate-text">
                   1 USDT is Roughly <strong>{exchangeRate} INR</strong>
                 </p>
-
+{/* 
 <Form.Group className="mb-3">
     <Form.Label>{selectedAction === "buy" ? "You Pay" : "You Receive"}</Form.Label>
     <div className="input-group">
@@ -135,17 +139,98 @@ const Dashboard = () => {
     </div>
   </Form.Group>
 
-  {/* Conversion Arrow */}
   <div className="text-center text-muted mb-3">⇅</div>
 
-  {/* You Will Receive (Input Group with USDT) */}
+ 
   <Form.Group className="mb-3">
     <Form.Label>{selectedAction === "buy" ? "You Will Receive Roughly" : "You Pay"}</Form.Label>
     <div className="input-group">
       <Form.Control type="number" placeholder="Enter amount" value={usdtAmount} readOnly />
       <span className="input-group-text"><SiTether /></span>
     </div>
-  </Form.Group>
+  </Form.Group> */}
+
+                                    {selectedAction === "buy" ? 
+                                    (  <>
+                                       <Form className="exchange-form">
+                                        
+                                         <Form.Group className="mb-3">
+                                         <Form.Label style={{color:'black'}}>You Pay</Form.Label>
+                                           <div className="input-group">
+                                             <Form.Control
+                                               type="number"
+                                               placeholder="Enter amount"
+                                               value={enterAmount}
+                                               onChange={(e) => setEnterAmount(e.target.value)}
+                                             />
+                                             <span className="input-group-text">
+                                               <FaRupeeSign />
+                                             </span>
+                                           </div>
+                                         </Form.Group>  
+                                         {/* Conversion Arrow */}
+                                         <div className="text-center text-muted mb-3">⇅</div>
+                                         {/* You Will Receive (Input Group with USDT) */}
+                                         <Form.Group className="mb-3">
+                                         <Form.Label style={{color:'black'}}>You Will Receive Roughly</Form.Label>
+                                           <div className="input-group">
+                                             <Form.Control
+                                               type="number"
+                                               placeholder="Enter amount"
+                                               value={usdtCurrency}
+                                               readOnly
+                                             />
+                                             <span className="input-group-text">
+                                               <SiTether />
+                                             </span>
+                                           </div>
+                                         </Form.Group>
+                                         <br />
+                                       </Form>
+                                     </>
+
+                                   ) : (
+
+                                     <>
+                                       <Form>
+                                         <Form.Group>
+                                           <Form.Label style={{color:'black'}}>You Pay</Form.Label>
+                                           <div className="input-group">
+                                             <Form.Control
+                                               type="number"
+                                                placeholder="Enter amount"
+                                               value={enterAmount}
+                                               onChange={(e) =>
+                                                 setEnterAmount(e.target.value)
+                                               }
+                                             />
+                                             <span className="input-group-text">
+                                               <SiTether />
+                                             </span>
+                                           </div>
+                                         </Form.Group>
+                                        <br/>
+  
+                                         <div className="text-center text-muted mb-3">⇅</div>
+               
+                                         <Form.Group className="mb-3">
+                                           <Form.Label style={{color:'black'}}>You Will Receive Roughly</Form.Label>
+                                           <div className="input-group">
+                                             <Form.Control
+                                               type="number"
+                                                placeholder="Enter amount"
+                                               value={indiacurrency}
+                                               readOnly
+                                             />
+                                             <span className="input-group-text">
+                                               <FaRupeeSign />
+                                             </span>
+                                           </div>
+                                         </Form.Group>
+                                         <br/>                                     
+                                       </Form>
+                                     </>
+                                   )}
 
 
                 <Button className="exchange-btn" onClick={()=>navigate("/buy")} variant="warning">
@@ -163,7 +248,7 @@ const Dashboard = () => {
               style={{ background: "#333", color: "#fff" }}
             >
               <Container>
-                <p className="mb-0">© 2025 Richesse Solutions, All Rights Reserved</p>
+                <p className="mb-0">© 2025 Richesse Currency Exchange, All Rights Reserved</p>
                 <p className="mb-0">
                   <a href="#terms" style={{ color: "#fff", textDecoration: "none" }}>
                     Terms of Use

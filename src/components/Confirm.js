@@ -185,7 +185,7 @@ const [fileName, setFileName] = useState("");
               style={{ background: "#333", color: "#fff" }}
             >
               <Container>
-                <p className="mb-0">© 2025 Richesse Solutions, All Rights Reserved</p>
+                <p className="mb-0">© 2025 Richesse Currency Exchange, All Rights Reserved</p>
                 <p className="mb-0">
                   <a href="#terms" style={{ color: "#fff", textDecoration: "none" }}>
                     Terms of Use

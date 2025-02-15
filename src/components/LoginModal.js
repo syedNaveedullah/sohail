@@ -5,94 +5,84 @@ import ForgotPassword from "./ForgotPassword";
 import { useMutation } from "@tanstack/react-query";
 import { loginUser, emailVerification } from "../api/fetching-apis";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2"; // Import SweetAlert2
 import "./pay.css";
-
-
-
-
 
 const LoginModal = ({ show, handleClose }) => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
-  const navigate = useNavigate(); 
-  // const handleAuthModalShow = useState ()
+  const navigate = useNavigate();
 
-  //login
+  // State for input fields
   const [Email, setEmail] = useState("");
   const [Password, setPassword] = useState("");
 
+  // Email verification mutation
+  const emailVerify = useMutation({
+    mutationFn: emailVerification,
+    mutationKey: ["emailVerification"],
+  });
 
+  // Login mutation
+  const { mutateAsync, isLoading } = useMutation({
+    mutationFn: loginUser,
+  });
 
-    // send verification link
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-    const emailVerify=useMutation({
-      mutationFn:emailVerification,
-      mutationKey:["emailVerification"]
-    })
-   
+    // Show loading alert
+    Swal.fire({
+      title: "Processing...",
+      text: "Please wait while we log you in.",
+      icon: "info",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
 
-// login
-const {mutateAsync, isError,isLoading} = useMutation({
-  mutationFn: loginUser,
-});
+    try {
+      await mutateAsync({ Email, Password });
 
-// const handleSubmit = (e) => {
-//   e.preventDefault();
-//   mutateAsync({ Email, Password }).then((data)=>{
-//     // console.log(data)
-//     alert("Login successful!");
-//     navigate("/dashboard");
-//   }).catch((error)=>{
-//     console.log(error)
-//     if(error.response.status==="403"){
-//        emailVerify.mutateAsync().then(()=>{
-//             alert("Verification link sent to your email!")
-//           }).catch((error)=>{
-//             alert(error.response?.data?.message)
-//           })
-//     }
-//   });
-// };
+      // Success alert
+      Swal.fire({
+        title: "Login Successful!",
+        text: "Welcome back!",
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
+      });
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    await mutateAsync({ Email, Password });
-    alert("Login successful!");
-    navigate("/dashboard");
-  } catch (error) {
-    console.log(error);
-    if (error.response?.status === 403) {
-      try {
-        await emailVerify.mutateAsync();
-        alert("Verification link sent to your email!");
-      } catch (emailError) {
-        alert(emailError.response?.data?.message);
+      navigate("/dashboard");
+    } catch (error) {
+      console.error(error);
+
+      if (error.response?.status === 403) {
+        try {
+          await emailVerify.mutateAsync();
+
+          Swal.fire({
+            title: "Verification Required",
+            text: "A verification link has been sent to your email.",
+            icon: "warning",
+            confirmButtonText: "OK",
+          });
+        } catch (emailError) {
+          Swal.fire({
+            title: "Error",
+            text: emailError.response?.data?.message || "Something went wrong.",
+            icon: "error",
+          });
+        }
+      } else {
+        Swal.fire({
+          title: "Login Failed",
+          text: error.response?.data?.message || "Invalid credentials!",
+          icon: "error",
+        });
       }
     }
-  }
-};
-
-
-
-
-// // login******************************************************************
-// const mutation = useMutation({
-//   mutationFn: loginUser,
-//   onSuccess: (data) => {
-//     localStorage.setItem("token", data.token); // Save token
-//     alert("Login successful!");
-//     navigate("/dashboard");
-//   },
-//   // onError: () => alert("Invalid credentials!"),
-// });
-
-// const handleSubmit = (e) => {
-//   e.preventDefault();
-//   mutation.mutate({ Email, Password });
-// };
-// *************************************************************
-
-
+  };
 
   return (
     <>
@@ -102,7 +92,7 @@ const handleSubmit = async (e) => {
             <h3>Login</h3>
           </Modal.Title>
 
-          <Button
+          {/* <Button
             variant="outline-danger"
             className="w-100 mb-4 d-flex align-items-center justify-content-center"
             style={{
@@ -130,11 +120,11 @@ const handleSubmit = async (e) => {
             </span>
           </div>
 
-          {isError && <p style={{ color: "red" }}>Login failed. Try again.</p>}
+          {isError && <p style={{ color: "red" }}>Login failed. Try again.</p>} */}
           
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3">
-              <Form.Label>email</Form.Label>
+              <Form.Label>Email</Form.Label>
               <Form.Control type="email" placeholder="Enter email" 
                value={Email}
                onChange={(e) => setEmail(e.target.value)}
@@ -145,11 +135,11 @@ const handleSubmit = async (e) => {
             <Form.Group className="mb-3">
               <Form.Label>Password</Form.Label>
               <Form.Control
-                 type="password"
-                 placeholder="Password"
-                 value={Password}
-                 onChange={(e) => setPassword(e.target.value)}
-                 required
+                type="password"
+                placeholder="Password"
+                value={Password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
               />
             </Form.Group>
 
@@ -158,6 +148,7 @@ const handleSubmit = async (e) => {
                 variant="link"
                 className="p-0"
                 onClick={() => setShowForgotPassword(true)}
+                style={{color:'#d4af37'}}
               >
                 Forgot Password?
               </Button>
@@ -170,17 +161,16 @@ const handleSubmit = async (e) => {
               disabled={isLoading}
               style={{
                 borderRadius: "20px",
-                background: "linear-gradient(to right, #f2711d, #f3ac1b)",
+                background: "#D4AF37",
                 border: "none",
               }}
             >
-              {/* LOGIN */}
               {isLoading ? "Logging in..." : "Login"}
             </Button>
 
             <div className="text-center">
               <span>Don't have an account? </span>
-              <Button variant="link" className="p-0"  onClick={() => navigate("/signup")}>
+              <Button variant="link" className="p-0" style={{color:'#d4af37'}} onClick={() => navigate("/signup")}>
                 SIGN UP
               </Button>
             </div>
@@ -194,6 +184,6 @@ const handleSubmit = async (e) => {
       />
     </>
   );
-  };
+};
 
 export default LoginModal;

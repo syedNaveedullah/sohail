@@ -4,6 +4,8 @@ import "./pay.css";
 import { useParams } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { verifyEmail } from "../api/fetching-apis";
+import Swal from "sweetalert2"; // Import SweetAlert2
+
 
 const Email = ({ show, handleClose }) => {
   const params = useParams();
@@ -11,12 +13,20 @@ const Email = ({ show, handleClose }) => {
   const { mutateAsync } = useMutation({
     mutationFn: verifyEmail,
     mutationKey: ["verifyEmail"], //from here we can see the data in developer tool
+    onSuccess: () => {
+      Swal.fire({
+        title: "Verified Successfully",
+        text: "Email Verified Successfully, Please Login",
+        icon: "success",
+        showConfirmButton: false,
+      });
+    },
   });
 
   const handleVerify = async () => {
     mutateAsync(params.token)
       .then((data) => {
-        console.log(data);
+        // console.log(data);
       })
       .catch((error) => {
         console.log(error);
@@ -37,7 +47,7 @@ const Email = ({ show, handleClose }) => {
             onClick={handleVerify}
             style={{
               borderRadius: "20px",
-              background: "linear-gradient(to right, #f2711d, #f3ac1b)",
+              background: "#d4af37",
               border: "none",
             }}>
             Verify Email

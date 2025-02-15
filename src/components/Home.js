@@ -16,7 +16,11 @@ import { SiTether } from "react-icons/si";
 import SignUpModal from "./SignUpModal";
 import LoginModal from "./LoginModal";
 import "./pay.css";
-import richesseImage from '../images/richesse.jpg';
+import richesseImage from '../images/richesse.ico';
+import Tether from '../images/Tether_Logo.png';
+import Razorpay from '../images/razor.png';
+import UPI from '../images/UPI-Logo.png';
+import Bank from '../images/banktransfer.png';
 
 const Home = () => {
   const [selectedMethod, setSelectedMethod] = useState(1);
@@ -26,8 +30,14 @@ const Home = () => {
   const [showSignUpModal, setShowSignUpModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
-  const exchangeRate = selectedAction === "buy" ? 94.06 : 89.38;
-  const usdtAmount = (inrAmount / exchangeRate).toFixed(2);
+const [enterAmount, setEnterAmount] = useState();
+
+const exchangeRate = selectedAction === "buy" ? 94.06 : 89.38;
+  const usdtCurrency=enterAmount/exchangeRate;
+  const indiacurrency = exchangeRate * enterAmount;
+
+  // const exchangeRate = selectedAction === "buy" ? 94.06 : 89.38;
+  // const usdtAmount = (inrAmount / exchangeRate).toFixed(2);
   
   const navigate = useNavigate()
 
@@ -51,7 +61,7 @@ const Home = () => {
       {/* Navigation Bar */}
       <Navbar
         expand="lg" 
-        style={{ background: "linear-gradient(to right, #fcefdc, #fdb44b)" }}
+        style={{ background: "linear-gradient(to left, #414141 0%, #000000 74%)" }}
         className="fixed-top"
       >
         <Container>
@@ -63,7 +73,7 @@ const Home = () => {
               className="d-inline-block align-top me-2"
               alt="Logo"
             />
-            <span className="fw-bold">Richesse Solutions</span>
+            <span className="fw-bold" style={{color:'white'}}>Richesse Currency Exchange</span>
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
 
@@ -77,7 +87,7 @@ const Home = () => {
                 className="px-4"
                 style={{
                   border: "none",
-                  color: "black",
+                  color: "white",
                   fontWeight: "bold",
                   background: "transparent",
                 }}
@@ -92,7 +102,7 @@ const Home = () => {
                 className="px-4"
                 style={{
                   borderRadius: "20px",
-                  background: "#f2951d",
+                  background: "#D4AF37",
                   border: "none",
                 }}
                 onClick={() => handleAuthModalShow(true)}
@@ -112,7 +122,8 @@ const Home = () => {
               <h5>Coins we support</h5>
               <div className="coin-support">
                 <img
-                  src="https://noriapay.com/images/icons/tether_img.png"
+                  // src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Tether_Logo.svg/2560px-Tether_Logo.svg.png"
+                  src={Tether}
                   alt="Tether"
                   className="tether-logo"
                 />
@@ -120,13 +131,18 @@ const Home = () => {
               <br />
               <p className="payment-text">PAYMENT METHODS</p>
               <div className="payment-icons">
+              <img
+                  src={Razorpay}
+                  alt="RAZORPAY"
+                  className="payment-logo"
+                />
                 <img
-                  src="https://noriapay.com/images/icons/upi_home.png"
+                   src={UPI}
                   alt="UPI"
                   className="payment-logo"
                 />
                 <img
-                  src="https://noriapay.com/images/icons/bank_transfer.png"
+               src={Bank}
                   alt="Bank Transfer"
                   className="payment-logo"
                 />
@@ -183,8 +199,8 @@ const Home = () => {
                 <p className="rate-text">
                   1 USDT is Roughly <strong>{exchangeRate} INR</strong>
                 </p>
-
-<Form.Group className="mb-3">
+{/* 
+<Form.Group className="mb-3 white ">
     <Form.Label>{selectedAction === "buy" ? "You Pay" : "You Receive"}</Form.Label>
     <div className="input-group">
       <Form.Control
@@ -197,17 +213,99 @@ const Home = () => {
     </div>
   </Form.Group>
 
-  {/* Conversion Arrow */}
+ 
   <div className="text-center text-muted mb-3">⇅</div>
 
-  {/* You Will Receive (Input Group with USDT) */}
-  <Form.Group className="mb-3">
+  
+  <Form.Group className="mb-3 white">
     <Form.Label>{selectedAction === "buy" ? "You Will Receive Roughly" : "You Pay"}</Form.Label>
     <div className="input-group">
       <Form.Control type="number" placeholder="Enter amount" value={usdtAmount} readOnly />
       <span className="input-group-text"><SiTether /></span>
     </div>
-  </Form.Group>
+  </Form.Group> */}
+
+                     
+             {selectedAction === "buy" ? (
+                                   <>
+                                     <Form className="exchange-form">
+                                      
+                                       <Form.Group className="mb-3">
+                                       <Form.Label style={{color:'black'}}>You Pay</Form.Label>
+                                         <div className="input-group">
+                                           <Form.Control
+                                             type="number"
+                                             placeholder="Enter amount"
+                                             value={enterAmount}
+                                             onChange={(e) => setEnterAmount(e.target.value)}
+                                           />
+                                           <span className="input-group-text">
+                                             <FaRupeeSign />
+                                           </span>
+                                         </div>
+                                       </Form.Group>  
+                                       {/* Conversion Arrow */}
+                                       <div className="text-center text-muted mb-3">⇅</div>
+                                       {/* You Will Receive (Input Group with USDT) */}
+                                       <Form.Group className="mb-3">
+                                       <Form.Label style={{color:'black'}}>You Will Receive Roughly</Form.Label>
+                                         <div className="input-group">
+                                           <Form.Control
+                                             type="number"
+                                             placeholder="Enter amount"
+                                             value={usdtCurrency}
+                                             readOnly
+                                           />
+                                           <span className="input-group-text">
+                                             <SiTether />
+                                           </span>
+                                         </div>
+                                       </Form.Group>
+                                       <br />
+                                     </Form>
+                                   </>
+                                 ) : (
+                                   <>
+                                     <Form>
+                                       <Form.Group>
+                                         <Form.Label style={{color:'black'}}>You Pay</Form.Label>
+                                         <div className="input-group">
+                                           <Form.Control
+                                             type="number"
+                                              placeholder="Enter amount"
+                                             value={enterAmount}
+                                             onChange={(e) =>
+                                               setEnterAmount(e.target.value)
+                                             }
+                                           />
+                                           <span className="input-group-text">
+                                             <SiTether />
+                                           </span>
+                                         </div>
+                                       </Form.Group>
+                                      <br/>
+
+                                       <div className="text-center text-muted mb-3">⇅</div>
+             
+                                       <Form.Group className="mb-3">
+                                         <Form.Label style={{color:'black'}}>You Will Receive Roughly</Form.Label>
+                                         <div className="input-group">
+                                           <Form.Control
+                                             type="number"
+                                              placeholder="Enter amount"
+                                             value={indiacurrency}
+                                             readOnly
+                                           />
+                                           <span className="input-group-text">
+                                             <FaRupeeSign />
+                                           </span>
+                                         </div>
+                                       </Form.Group>
+                                       <br/>                                     
+                                     </Form>
+                                   </>
+                                 )}
+
 
 
                 <Button className="exchange-btn" variant="warning"  onClick={() => handleAuthModalShow(true)}
@@ -225,12 +323,12 @@ const Home = () => {
       <div
         className="how-to-exchange-section"
         style={{
-          background: "linear-gradient(to right, #fcefdc, #fdb44b)",
+          background: "linear-gradient(to left, #414141 0%, #000000 74%)",
           padding: "50px 0",
         }}
       >
         <Container>
-          <h2 className="text-center mb-5">How To Exchange?</h2>
+          <h2 className="text-center mb-5" style={{color:'white'}}>How To Exchange?</h2>
           <Row className="text-center">
             {/* Step 1 */}
             <Col md={4} className="mb-4">
@@ -278,7 +376,7 @@ const Home = () => {
               variant="primary"
               style={{
                 borderRadius: "20px",
-                background: "#f2951d",
+                background: "#D4AF37",
                 border: "none",
                 padding: "10px 30px",
               }}
@@ -296,7 +394,7 @@ const Home = () => {
         style={{ background: "#333", color: "#fff" }}
       >
         <Container>
-          <p className="mb-0">© 2025 Richesse Solutions, All Rights Reserved</p>
+          <p className="mb-0">© 2025 Richesse Currency Exchange, All Rights Reserved</p>
           <p className="mb-0">
             <a href="#terms" style={{ color: "#fff", textDecoration: "none" }}>
               Terms of Use

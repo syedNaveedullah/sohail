@@ -19,6 +19,7 @@ import TransactionsDetails from "./components/TransactionsDetails";
 
 import { ToastContainer } from "react-toastify";
 import Email from "./components/Email";
+import ResetPassword from "./components/ResetPassword";
 
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/Navbar" element={<CustomNavbar />} />
+        <Route path="/Home" element={<Home />} />
         <Route path="/Dashboard" element={<Dashboard />} />
         <Route path="/Transaction" element={<Transaction />} />
         <Route path="/Profile" element={<Profile />} />
@@ -39,7 +41,8 @@ function App() {
         <Route path="/TransactionsDetails" element={<TransactionsDetails />} />
         <Route path="/login" element={<LoginModal show={true} handleClose={() => {}} />} />
         <Route path="/signup" element={<SignUpModal show={true} handleClose={() => {}} />} />
-        <Route path="/email/:token" element={<Email show={true} handleClose={() => {}} />} />
+        <Route path="/verifyEmail/:token" element={<Email show={true} handleClose={() => {}} />} />
+        <Route path="/resetpassword/:token" element={<ResetPassword show={true} handleClose={() => {}} />} />
 
         <Route
           path="/"

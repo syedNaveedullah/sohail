@@ -1,10 +1,10 @@
 import axios from "axios";
+import Cookies from "js-cookie";
 
 const api = axios.create({
     // baseURL: "https://currex-backend.onrender.com",
     baseURL: "http://localhost:4000",
     withCredentials:true
-
 });
 
 // siginup
@@ -37,6 +37,47 @@ export const emailVerification= ()=>{
 export const verifyEmail=(token)=>{
     return api.post(`api/v1/auth/verifyEmail/${token}`,{})
 }
-export const updateProfileSetting = async (data) => {
-    return api.put("/api/v1/auth/profile", data);
+
+//logout
+export const logoutUser = async () => {
+    return api.post("/api/v1/auth/logout");
 }
+
+
+// sending reset password link
+export const forgetPasswordLink = async (Email) => {
+    return api.post("/api/v1/auth/forgetPassword", {
+        Email,
+    });
+}
+
+
+// reset password
+export const resetPassword = async ({token, newPassword}) => {
+    return api.post(`/api/v1/auth/resetpassword/${token}`, { newPassword, });
+}
+
+
+
+// get profile
+export const getProfile = async () => {
+    const response = await api.get("/api/v1/auth/profile", {});
+    return response.data;
+};
+
+// change password
+export const changePassword = async ({ oldPassword, newPassword }) => {
+    return await api.put("/api/v1/auth/changePassword", {
+        oldPassword,
+        newPassword,
+    }
+);
+};
+
+// update profile
+export const updateProfile = async ({ FullName }) => {
+    return await api.put("/api/v1/auth/profile", {
+        FullName,
+    }
+);
+};
